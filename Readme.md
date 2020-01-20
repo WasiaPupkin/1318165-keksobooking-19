@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Сысоев Дмитрий](https://up.htmlacademy.ru/javascript/19/user/1318165).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Титаков](https://htmlacademy.ru/profile/id1243803).
 
 ---
 
