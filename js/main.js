@@ -16,6 +16,7 @@ var noticeTemplate = document.querySelector('#pin')
 var noticeCardTemplate = document.querySelector('#card')
   .content
   .querySelector('.map__card');
+var LEFT_BUTTON = 0;
 
 var generateAddress = function (locationX, locationY) {
   return locationX + ', ' + locationY;
@@ -113,9 +114,9 @@ var generateNotices = function () {
   }
 };
 
-var removeMapFading = function () {
-  document.querySelector('.map').classList.remove('map--faded');
-};
+// var removeMapFading = function () {
+//   document.querySelector('.map').classList.remove('map--faded');
+// };
 
 var renderNotices = function (notice) {
   var noticeElement = noticeTemplate.cloneNode(true);
@@ -209,7 +210,47 @@ var fillPopup = function () {
   document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filters-container'));
 };
 
+var togglePageState = function (isActive) {
+  var noticeForm = document.querySelector('.ad-form');
+  if(isActive){
+    document.querySelector('.map').classList.toggle('map--faded');
+    noticeForm.classList.toggle('ad-form--disabled');
+  }
+
+  var noticeFieldSets = noticeForm.querySelectorAll('fieldset');
+  for(var i = 0; i<noticeFieldSets.length; i++){
+    noticeFieldSets[i].disabled = !noticeFieldSets[i].disabled;
+  }
+  var mapFilters = document.querySelector('.map__filters');
+  var mapFilterSelects = mapFilters.querySelectorAll('select');
+  for(var j = 0; j< mapFilterSelects; j++){
+    mapFilterSelects[j].disabled = !mapFilterSelects[j].disabled;
+  }
+  var mapFilterFieldSets = mapFilters.querySelectorAll('fieldset');
+  for(var k = 0; k< mapFilterFieldSets; k++){
+    mapFilterFieldSets[k].disabled = !mapFilterFieldSets[k].disabled;
+  }
+
+};
+
 generateNotices();
-removeMapFading();
+// removeMapFading();
 applyNotices();
-fillPopup();
+// fillPopup();
+togglePageState(false);
+
+
+var isPageActivated = false;
+var mapPin = document.querySelector('.map__pin--main');
+mapPin.addEventListener('mousedown', function (evt) {
+  if(evt.button === LEFT_BUTTON && !isPageActivated){
+    isPageActivated = true;
+    togglePageState(isPageActivated);
+  }
+});
+mapPin.addEventListener('keydown', function (evt) {
+  if(evt.key === 'Enter' && !isPageActivated){
+    isPageActivated = true;
+    togglePageState(isPageActivated);
+  }
+});
