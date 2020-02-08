@@ -204,9 +204,11 @@ var renderNoticeCard = function (notice) {
 };
 
 var fillPopup = function () {
-  var cardFragment = document.createDocumentFragment();
-  cardFragment.appendChild(renderNoticeCard(notices[0]));
-  document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filters-container'));
+  if (notices[0]) {
+    var cardFragment = document.createDocumentFragment();
+    cardFragment.appendChild(renderNoticeCard(notices[0]));
+    document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filters-container'));
+  }
 };
 
 generateNotices();
