@@ -8,15 +8,18 @@ window.form = (function () {
   var type = document.querySelector('#type');
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
+  var mainPin = window.pin.elements.mapPinMain;
 
   var fillDefaultAddress = function (isActive) {
     var address = document.querySelector('#address');
-    var mainPinLeftPos = parseFloat(document.querySelector('.map__pin--main').style.left);
-    var mainPinTopPos = parseFloat(document.querySelector('.map__pin--main').style.top);
+    var mainPinLeftPos = parseFloat(mainPin.style.left);
+    var mainPinTopPos = parseFloat(mainPin.style.top);
     if (isActive) {
-      address.value = Math.round(mainPinLeftPos / 2) + ', ' + Math.round(mainPinTopPos);
+      address.value = Math.round(mainPinLeftPos + mainPin.offsetWidth / 2) + ', '
+        + Math.round(mainPinTopPos + mainPin.offsetHeight);
     } else {
-      address.value = Math.round(mainPinLeftPos / 2) + ', ' + Math.round(mainPinTopPos / 2);
+      address.value = Math.round(mainPinLeftPos + mainPin.offsetWidth / 2) + ', '
+        + Math.round(mainPinTopPos + mainPin.offsetHeight / 2);
     }
   };
 
