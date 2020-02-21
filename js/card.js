@@ -8,14 +8,11 @@ window.card = (function () {
     .content
     .querySelector('.map__card');
 
-  var convertType = function (type_) {
-    switch (type_) {
-      case 'flat': return 'Квартира';
-      case 'bungalo': return 'Бунгало';
-      case 'house': return 'Дом';
-      case 'palace': return 'Дворец';
-      default : return 'нечто';
-    }
+  var TYPE_DICTIONARY = {
+    'flat': 'Квартира',
+    'bungalo': 'Бунгало',
+    'house': 'Дом',
+    'palace': 'Дворец'
   };
 
   var fillFeaturesList = function (notice, noticeCardElement) {
@@ -73,7 +70,7 @@ window.card = (function () {
     noticeCardElement.querySelector('.popup__title').textContent = notice.offer.title;
     noticeCardElement.querySelector('.popup__text--address').textContent = notice.offer.address;
     noticeCardElement.querySelector('.popup__text--price').textContent = notice.offer.price + ' ₽/ночь';
-    noticeCardElement.querySelector('.popup__type').textContent = convertType(notice.offer.type);
+    noticeCardElement.querySelector('.popup__type').textContent = TYPE_DICTIONARY[notice.offer.type];
     noticeCardElement.querySelector('.popup__text--capacity').textContent = notice.offer.rooms + ' комнаты для ' + notice.offer.guests + ' гостей';
     noticeCardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + notice.offer.checkin + ', выезд до ' + notice.offer.checkout;
     fillFeaturesList(notice, noticeCardElement);
@@ -85,8 +82,9 @@ window.card = (function () {
   };
 
   var findNotice = function (location) {
-    for (var i = 0; i < window.mainModule.notices.length; i++) {
-      var notice = window.mainModule.notices[i];
+    var notices = window.mainModule.getNotices();
+    for (var i = 0; i < notices.length; i++) {
+      var notice = notices[i];
       if (notice.location.x === location.x && notice.location.y === location.y) {
         return notice;
       }

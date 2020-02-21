@@ -2,12 +2,20 @@
 
 window.pin = (function () {
   var LEFT_BUTTON = 0;
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var mapPins = document.querySelector('.map__pins');
-  var noticeTemplate = document.querySelector('#pin')
-    .content
-    .querySelector('.map__pin');
   var isPageActivated = false;
+
+  var elements = {
+    mapPinMain: document.querySelector('.map__pin--main'),
+    mapPins: document.querySelector('.map__pins'),
+    noticeTemplate: document.querySelector('#pin').content.querySelector('.map__pin')
+  };
+
+  var pinBoundaries = {
+    minTop: window.data.LOCATIONY_CONSTRAINTS.min - elements.mapPinMain.offsetHeight,
+    maxTop: window.data.LOCATIONY_CONSTRAINTS.max,
+    minLeft: -elements.mapPinMain.offsetWidth / 2,
+    maxLeft: elements.mapPins.offsetWidth - elements.mapPinMain.offsetWidth / 2
+  };
 
   var onMapPinClickEnter = function (evt) {
     var target = evt.target;
@@ -69,27 +77,93 @@ window.pin = (function () {
     window.form.fillDefaultAddress(isPageActivated);
   };
 
-  mapPins.addEventListener('keydown', function (evt) {
+  var handleMainPinMove = function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var dragged = false;
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      dragged = true;
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var tmpTop = elements.mapPinMain.offsetTop - shift.y;
+      var tmpLeft = elements.mapPinMain.offsetLeft - shift.x;
+
+      if (tmpTop < pinBoundaries.minTop) {
+        tmpTop = pinBoundaries.minTop;
+      }
+      if (tmpTop > pinBoundaries.maxTop) {
+        tmpTop = pinBoundaries.maxTop;
+      }
+      if (tmpLeft < pinBoundaries.minLeft) {
+        tmpLeft = pinBoundaries.minLeft;
+      }
+      if (tmpLeft > pinBoundaries.maxLeft) {
+        tmpLeft = pinBoundaries.maxLeft;
+      }
+
+      elements.mapPinMain.style.top = tmpTop + 'px';
+      elements.mapPinMain.style.left = tmpLeft + 'px';
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      if (dragged) {
+        var onClickPreventDefault = function (clickEvt) {
+          clickEvt.preventDefault();
+          elements.mapPinMain.removeEventListener('click', onClickPreventDefault);
+        };
+        elements.mapPinMain.addEventListener('click', onClickPreventDefault);
+
+        window.form.fillDefaultAddress(isPageActivated);
+      }
+
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
+  elements.mapPins.addEventListener('keydown', function (evt) {
     window.util.doEnterEvent(evt, onMapPinClickEnter);
   }, true);
 
-  mapPins.addEventListener('click', function (evt) {
+  elements.mapPins.addEventListener('click', function (evt) {
     onMapPinClickEnter(evt);
   }, true);
 
-  mapPinMain.addEventListener('mousedown', function (evt) {
+  elements.mapPinMain.addEventListener('mousedown', function (evt) {
     if (evt.button === LEFT_BUTTON && !isPageActivated) {
       activatePageState();
     }
+    handleMainPinMove(evt);
   });
-  mapPinMain.addEventListener('keydown', function (evt) {
+  elements.mapPinMain.addEventListener('keydown', function (evt) {
     if (evt.key === 'Enter' && !isPageActivated) {
       activatePageState();
     }
   });
 
   var renderNotices = function (notice) {
-    var noticeElement = noticeTemplate.cloneNode(true);
+    var noticeElement = elements.noticeTemplate.cloneNode(true);
     var image = noticeElement.querySelector('img');
 
     noticeElement.style = 'left: ' + (notice.location.x + noticeElement.offsetWidth / 2) + 'px; top: ' + (notice.location.y + noticeElement.offsetHeight) + 'px;';
@@ -108,6 +182,7 @@ window.pin = (function () {
   };
 
   return {
+    elements: elements,
     getNoticesFragment: getNoticesFragment,
     togglePageState: togglePageState
   };
