@@ -6,6 +6,7 @@ window.data = (function () {
     max: 630
   };
   var GET_URL = 'https://js.dump.academy/keksobooking/data';
+  var SAVE_URL = 'https://js.dump.academy/keksobooking';
   var StatusCode = {
     OK: 200
   };
@@ -41,8 +42,16 @@ window.data = (function () {
     xhr.send();
   };
 
+  var _saveNotice = function (data, onLoad, onError) {
+    var xhr = _createXHR(onLoad, onError);
+
+    xhr.open('POST', SAVE_URL);
+    xhr.send(data);
+  };
+
   return {
     loadNotices: _loadNotices,
+    saveNotice: _saveNotice,
     LOCATIONY_CONSTRAINTS: LOCATIONY_CONSTRAINTS
   };
 })();
