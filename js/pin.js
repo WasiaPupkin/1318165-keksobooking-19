@@ -2,7 +2,6 @@
 
 window.pin = (function () {
   var LEFT_BUTTON = 0;
-  var isPageActivated = false;
 
   var elements = {
     mapPinMain: document.querySelector('.map__pin--main'),
@@ -72,9 +71,9 @@ window.pin = (function () {
   };
 
   var activatePageState = function () {
-    isPageActivated = true;
-    togglePageState(isPageActivated);
-    window.form.fillDefaultAddress(isPageActivated);
+    window.mainModule.setPageActivation(true);
+    togglePageState(window.mainModule.getPageActivation());
+    window.form.fillDefaultAddress(window.mainModule.getPageActivation());
   };
 
   var handleMainPinMove = function (evt) {
@@ -134,7 +133,7 @@ window.pin = (function () {
         };
         elements.mapPinMain.addEventListener('click', onClickPreventDefault);
 
-        window.form.fillDefaultAddress(isPageActivated);
+        window.form.fillDefaultAddress(window.mainModule.getPageActivation());
       }
 
     };
@@ -151,13 +150,13 @@ window.pin = (function () {
   }, true);
 
   elements.mapPinMain.addEventListener('mousedown', function (evt) {
-    if (evt.button === LEFT_BUTTON && !isPageActivated) {
+    if (evt.button === LEFT_BUTTON && !window.mainModule.getPageActivation()) {
       activatePageState();
     }
     handleMainPinMove(evt);
   });
   elements.mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Enter' && !isPageActivated) {
+    if (evt.key === 'Enter' && !window.mainModule.getPageActivation()) {
       activatePageState();
     }
   });

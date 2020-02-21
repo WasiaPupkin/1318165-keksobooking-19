@@ -1,6 +1,7 @@
 'use strict';
 
 window.form = (function () {
+  var form = document.querySelector('.ad-form');
   var adSubmitBtn = document.querySelector('.ad-form__submit');
   var title = document.querySelector('#title');
   var capacity = document.querySelector('#capacity');
@@ -9,6 +10,11 @@ window.form = (function () {
   var timein = document.querySelector('#timein');
   var timeout = document.querySelector('#timeout');
   var mainPin = window.pin.elements.mapPinMain;
+  var errorMessageTemplate = document.querySelector('#error').content;
+  var errorMessagePopup;
+  var successMessageTemplate = document.querySelector('#success').content;
+  var successPopup;
+  var clearFormBtn = document.querySelector('.ad-form__reset');
 
   var fillDefaultAddress = function (isActive) {
     var address = document.querySelector('#address');
@@ -91,6 +97,75 @@ window.form = (function () {
   adSubmitBtn.addEventListener('click', function () {
     validateCapacity();
     validatePrice();
+  });
+
+  clearFormBtn.addEventListener('click', function () {
+    form.reset();
+  });
+
+  var onSubmitError = function () {
+    if (!errorMessagePopup) {
+      var errorMessageFrag = errorMessageTemplate.cloneNode(true);
+      document.querySelector('main').appendChild(errorMessageFrag);
+      errorMessagePopup = document.querySelector('.error');
+      errorMessagePopup.querySelector('.error__button').addEventListener('click', function () {
+        onErrorClose();
+      });
+      onErrorShow();
+    } else {
+      onErrorShow();
+    }
+  };
+
+  var onErrorShow = function () {
+    errorMessagePopup.classList.remove('hidden');
+    document.addEventListener('click', onErrorClose);
+    document.addEventListener('keydown', onErrorEscPress);
+  };
+
+  var onErrorClose = function () {
+    errorMessagePopup.classList.add('hidden');
+    document.removeEventListener('keydown', onErrorEscPress);
+    document.removeEventListener('click', onErrorClose);
+  };
+
+  var onErrorEscPress = function (evt) {
+    window.util.doEscEvent(evt, onErrorClose);
+  };
+
+  var onSuccessShow = function () {
+    successPopup.classList.remove('hidden');
+    document.addEventListener('click', onSuccessClose);
+    document.addEventListener('keydown', onSuccessEscPress);
+  };
+
+  var onSuccessEscPress = function (evt) {
+    window.util.doEscEvent(evt, onSuccessClose);
+  };
+
+  var onSuccessClose = function () {
+    successPopup.classList.add('hidden');
+    document.removeEventListener('keydown', onSuccessEscPress);
+    document.removeEventListener('click', onSuccessShow);
+  };
+
+  form.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+
+    window.data.saveNotice(new FormData(form), function () {
+      window.pin.togglePageState(window.mainModule.getPageActivation());
+      window.mainModule.setPageActivation(!window.mainModule.getPageActivation());
+
+      if (!successPopup) {
+        var successMessage = successMessageTemplate.cloneNode(true);
+        form.appendChild(successMessage);
+        successPopup = document.querySelector('.success');
+        onSuccessShow();
+      } else {
+        onSuccessShow();
+      }
+      form.reset();
+    }, onSubmitError);
   });
 
   timein.addEventListener('input', onTimeInInput);

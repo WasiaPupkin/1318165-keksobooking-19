@@ -12,6 +12,13 @@ window.mainModule = (function () {
     return _notices;
   };
 
+  var setPageActivation = function (isActivated) {
+    isPageActivated = isActivated;
+  };
+
+  var getPageActivation = function () {
+    return isPageActivated;
+  };
   var applyNotices = function () {
     document.querySelector('.map__pins').appendChild(window.pin.getNoticesFragment(getNotices()));
   };
@@ -26,7 +33,9 @@ window.mainModule = (function () {
   window.data.loadNotices(successHandler, window.util.errorHandler);
 
   return {
-    getNotices: getNotices
+    getNotices: getNotices,
+    setPageActivation: setPageActivation,
+    getPageActivation: getPageActivation
   };
 
 })();
