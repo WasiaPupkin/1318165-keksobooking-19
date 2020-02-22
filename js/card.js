@@ -93,8 +93,10 @@ window.card = (function () {
   };
 
   var onPopupOpen = function () {
-    cardPopup.classList.remove('hidden');
-    document.addEventListener('keydown', onPopupEscPress);
+    if (cardPopup) {
+      cardPopup.classList.remove('hidden');
+      document.addEventListener('keydown', onPopupEscPress);
+    }
   };
 
   var onPopupEscPress = function (evt) {
@@ -102,8 +104,10 @@ window.card = (function () {
   };
 
   var onPopupClose = function () {
-    cardPopup.classList.add('hidden');
-    document.removeEventListener('keydown', onPopupEscPress);
+    if (cardPopup) {
+      cardPopup.classList.add('hidden');
+      document.removeEventListener('keydown', onPopupEscPress);
+    }
   };
 
   var initPopupEvents = function (popup) {
@@ -124,7 +128,7 @@ window.card = (function () {
     if (!notice) {
       return;
     }
-    var map = document.querySelector('.map');
+    var map = window.appDefaults.elements.map;
 
     if (!map.querySelector('.map__card')) {
       var cardFragment = document.createDocumentFragment();
@@ -140,6 +144,7 @@ window.card = (function () {
   return {
     fillPopup: fillPopup,
     findNotice: findNotice,
-    onPopupOpen: onPopupOpen
+    onPopupOpen: onPopupOpen,
+    onPopupClose: onPopupClose
   };
 })();
