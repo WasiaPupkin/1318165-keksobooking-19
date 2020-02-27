@@ -30,10 +30,8 @@ window.mainModule = (function () {
 
   var successHandler = function (data) {
     setNotices(data);
-    var filteredByDefaultNotices = getNotices().slice(window.appDefaults.constants.MAX_NOTICES_ON_PAGE);
-    applyNotices(filteredByDefaultNotices);
-    window.pin.togglePageState(isPageActivated);
-    window.form.fillDefaultAddress(isPageActivated);
+    window.pin.togglePageState(getPageActivation());
+    window.form.fillDefaultAddress(getPageActivation());
   };
 
   window.data.loadNotices(successHandler, window.util.errorHandler);

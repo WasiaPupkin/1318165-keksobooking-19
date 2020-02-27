@@ -2,16 +2,19 @@
 
 window.pin = (function () {
   var LEFT_BUTTON = 0;
-
   var elements = {
     mapPinMain: document.querySelector('.map__pin--main'),
     mapPins: document.querySelector('.map__pins'),
     noticeTemplate: document.querySelector('#pin').content.querySelector('.map__pin')
   };
+  var mapPinMainDefaultStyle = {
+    left: elements.mapPinMain.style.left,
+    top: elements.mapPinMain.style.top,
+  };
 
   var pinBoundaries = {
     minTop: window.data.LOCATIONY_CONSTRAINTS.min - elements.mapPinMain.offsetHeight,
-    maxTop: window.data.LOCATIONY_CONSTRAINTS.max,
+    maxTop: window.data.LOCATIONY_CONSTRAINTS.max - elements.mapPinMain.offsetHeight,
     minLeft: -elements.mapPinMain.offsetWidth / 2,
     maxLeft: elements.mapPins.offsetWidth - elements.mapPinMain.offsetWidth / 2
   };
@@ -20,11 +23,15 @@ window.pin = (function () {
     var target = evt.target;
     var mapPin = target.closest('.map__pin');
 
-    if (!target || !mapPin) {
+    if (!target || !mapPin || !window.mainModule.getNotices()) {
       return;
     }
 
     var allowedPins = document.querySelectorAll('[class="map__pin"]');
+
+    if(!allowedPins.length){
+      window.mainModule.applyNotices(window.mainModule.getNotices().slice(window.appDefaults.constants.START_ARRAY_INDEX, window.appDefaults.constants.MAX_NOTICES_ON_PAGE));
+    }
 
     var targetLocation = {
       x: parseInt(mapPin.style.left, 10),
@@ -139,20 +146,20 @@ window.pin = (function () {
 
   elements.mapPins.addEventListener('keydown', function (evt) {
     window.util.doEnterEvent(evt, onMapPinClickEnter);
-  }, true);
+  });
 
   elements.mapPins.addEventListener('click', function (evt) {
     onMapPinClickEnter(evt);
-  }, true);
+  });
 
   elements.mapPinMain.addEventListener('mousedown', function (evt) {
-    if (evt.button === LEFT_BUTTON && !window.mainModule.getPageActivation()) {
+    if (evt.button === LEFT_BUTTON && (window.mainModule && !window.mainModule.getPageActivation())) {
       activatePageState();
     }
     handleMainPinMove(evt);
   });
   elements.mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Enter' && !window.mainModule.getPageActivation()) {
+    if (evt.key === 'Enter' && (window.mainModule && !window.mainModule.getPageActivation())) {
       activatePageState();
     }
   });
@@ -176,10 +183,20 @@ window.pin = (function () {
     return fragment;
   };
 
+  var resetPinForm = function () {
+    window.appDefaults.elements.mapFilters.reset();
+    window.mainModule.applyNotices([]);
+    togglePageState(window.mainModule.getPageActivation());
+    window.mainModule.setPageActivation(!window.mainModule.getPageActivation());
+    elements.mapPinMain.style = 'left: '+ mapPinMainDefaultStyle.left + '; top: ' + mapPinMainDefaultStyle.top;
+    window.form.fillDefaultAddress(window.mainModule.getPageActivation());
+  };
+
   return {
     elements: elements,
     getNoticesFragment: getNoticesFragment,
-    togglePageState: togglePageState
+    togglePageState: togglePageState,
+    resetPinForm: resetPinForm
   };
 
 })();

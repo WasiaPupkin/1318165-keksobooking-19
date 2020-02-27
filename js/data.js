@@ -44,6 +44,7 @@ window.data = (function () {
 
   var _saveNotice = function (data, onLoad, onError) {
     var xhr = _createXHR(onLoad, onError);
+    xhr.requestType = 'multipart/form-data';
 
     xhr.open('POST', SAVE_URL);
     xhr.send(data);

@@ -9,7 +9,8 @@ window.appDefaults = (function () {
   var noticeFieldSets = noticeForm.querySelectorAll('fieldset');
 
   var constants = {
-    MAX_NOTICES_ON_PAGE: 5
+    MAX_NOTICES_ON_PAGE: 5,
+    START_ARRAY_INDEX: 0
   };
 
   var elements = {
