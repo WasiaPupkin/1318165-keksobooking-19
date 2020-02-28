@@ -3,12 +3,7 @@
 (function () {
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
-  var userAvatarInput = document.querySelector('#avatar');
-  var userAvatarPreview = document.querySelector('.ad-form-header__preview').firstElementChild; //img
-  var noticeImageInput = document.querySelector('#images');
-  var noticeImagePreview =document.querySelector('.ad-form__photo'); //div
-
-  var addFile = function(inputSource, imgDest){
+  var addFile = function (inputSource, imgDest) {
     var file = inputSource.files[0];
     var fileName = file.name.toLowerCase();
 
@@ -27,16 +22,16 @@
     }
   };
 
-  userAvatarInput.addEventListener('change', function () {
-    addFile(userAvatarInput, userAvatarPreview);
+  window.appDefaults.elements.userAvatarInput.addEventListener('change', function () {
+    addFile(window.appDefaults.elements.userAvatarInput, window.appDefaults.elements.userAvatarPreview);
   });
 
-  noticeImageInput.addEventListener('change', function () {
+  window.appDefaults.elements.noticeImageInput.addEventListener('change', function () {
     var img = document.createElement('img');
-    img.width = noticeImagePreview.offsetWidth;
-    img.height = noticeImagePreview.offsetHeight;
-    noticeImagePreview.append(img);
-    addFile(noticeImageInput, img);
+    img.width = window.appDefaults.elements.noticeImagePreview.offsetWidth;
+    img.height = window.appDefaults.elements.noticeImagePreview.offsetHeight;
+    window.appDefaults.elements.noticeImagePreview.append(img);
+    addFile(window.appDefaults.elements.noticeImageInput, img);
   });
 
 })();

@@ -102,7 +102,7 @@ window.form = (function () {
 
   clearFormBtn.addEventListener('click', function () {
     form.reset();
-    window.pin.resetPinForm();
+    window.pin.resetForms();
   });
 
   var onSubmitError = function () {
@@ -164,7 +164,7 @@ window.form = (function () {
         onSuccessShow();
       }
       form.reset();
-      window.pin.resetPinForm();
+      window.pin.resetForms();
 
     }, onSubmitError);
   });

@@ -7,8 +7,9 @@ window.appDefaults = (function () {
   var mapFilterFieldSet = mapFilters.querySelector('.map__features');
   var noticeForm = document.querySelector('.ad-form');
   var noticeFieldSets = noticeForm.querySelectorAll('fieldset');
+  var userAvatarPreview = document.querySelector('.ad-form-header__preview').firstElementChild;
 
-  var constants = {
+  var Constants = {
     MAX_NOTICES_ON_PAGE: 5,
     START_ARRAY_INDEX: 0
   };
@@ -19,12 +20,17 @@ window.appDefaults = (function () {
     mapFilterSelects: mapFilterSelects,
     mapFilterFieldSet: mapFilterFieldSet,
     noticeForm: noticeForm,
-    noticeFieldSets: noticeFieldSets
+    noticeFieldSets: noticeFieldSets,
+    userAvatarInput: document.querySelector('#avatar'),
+    userAvatarPreview: userAvatarPreview,
+    userAvatarPreviewDefaultSrc: userAvatarPreview.src,
+    noticeImageInput: document.querySelector('#images'),
+    noticeImagePreview: document.querySelector('.ad-form__photo')
   };
 
   return {
     elements: elements,
-    constants: constants
+    Constants: Constants
   };
 
 })();

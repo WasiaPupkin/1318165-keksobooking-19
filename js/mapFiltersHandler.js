@@ -76,7 +76,7 @@ window.mapFiltersHandler = (function () {
     var filteredNotices = doNoticesFiltration(combineCheckedElements(), window.mainModule.getNotices());
 
     if (filteredNotices) {
-      window.mainModule.applyNotices(filteredNotices.slice(window.appDefaults.constants.START_ARRAY_INDEX, window.appDefaults.constants.MAX_NOTICES_ON_PAGE));
+      window.mainModule.applyNotices(filteredNotices.slice(window.appDefaults.Constants.START_ARRAY_INDEX, window.appDefaults.Constants.MAX_NOTICES_ON_PAGE));
     }
     window.card.onPopupClose();
   };

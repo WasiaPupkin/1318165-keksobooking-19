@@ -1,9 +1,9 @@
 'use strict';
 
 window.data = (function () {
-  var LOCATIONY_CONSTRAINTS = {
-    min: 130,
-    max: 630
+  var LocationYConstraints = {
+    MIN: 130,
+    MAX: 630
   };
   var GET_URL = 'https://js.dump.academy/keksobooking/data';
   var SAVE_URL = 'https://js.dump.academy/keksobooking';
@@ -53,6 +53,6 @@ window.data = (function () {
   return {
     loadNotices: _loadNotices,
     saveNotice: _saveNotice,
-    LOCATIONY_CONSTRAINTS: LOCATIONY_CONSTRAINTS
+    LocationYConstraints: LocationYConstraints
   };
 })();
