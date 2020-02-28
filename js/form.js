@@ -15,6 +15,7 @@ window.form = (function () {
   var successMessageTemplate = document.querySelector('#success').content;
   var successPopup;
   var clearFormBtn = document.querySelector('.ad-form__reset');
+  var mainTag = document.querySelector('main');
 
   var fillDefaultAddress = function (isActive) {
     var address = document.querySelector('#address');
@@ -101,12 +102,13 @@ window.form = (function () {
 
   clearFormBtn.addEventListener('click', function () {
     form.reset();
+    window.pin.resetForms();
   });
 
   var onSubmitError = function () {
     if (!errorMessagePopup) {
       var errorMessageFrag = errorMessageTemplate.cloneNode(true);
-      document.querySelector('main').appendChild(errorMessageFrag);
+      mainTag.appendChild(errorMessageFrag);
       errorMessagePopup = document.querySelector('.error');
       errorMessagePopup.querySelector('.error__button').addEventListener('click', function () {
         onErrorClose();
@@ -153,18 +155,17 @@ window.form = (function () {
     evt.preventDefault();
 
     window.data.saveNotice(new FormData(form), function () {
-      window.pin.togglePageState(window.mainModule.getPageActivation());
-      window.mainModule.setPageActivation(!window.mainModule.getPageActivation());
-
       if (!successPopup) {
         var successMessage = successMessageTemplate.cloneNode(true);
-        form.appendChild(successMessage);
+        mainTag.appendChild(successMessage);
         successPopup = document.querySelector('.success');
         onSuccessShow();
       } else {
         onSuccessShow();
       }
       form.reset();
+      window.pin.resetForms();
+
     }, onSubmitError);
   });
 

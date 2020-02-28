@@ -2,73 +2,77 @@
 
 window.pin = (function () {
   var LEFT_BUTTON = 0;
-
   var elements = {
     mapPinMain: document.querySelector('.map__pin--main'),
     mapPins: document.querySelector('.map__pins'),
     noticeTemplate: document.querySelector('#pin').content.querySelector('.map__pin')
   };
+  var mapPinMainDefaultStyle = {
+    left: elements.mapPinMain.style.left,
+    top: elements.mapPinMain.style.top,
+  };
 
   var pinBoundaries = {
-    minTop: window.data.LOCATIONY_CONSTRAINTS.min - elements.mapPinMain.offsetHeight,
-    maxTop: window.data.LOCATIONY_CONSTRAINTS.max,
+    minTop: window.data.LocationYConstraints.MIN - elements.mapPinMain.offsetHeight,
+    maxTop: window.data.LocationYConstraints.max - elements.mapPinMain.offsetHeight,
     minLeft: -elements.mapPinMain.offsetWidth / 2,
     maxLeft: elements.mapPins.offsetWidth - elements.mapPinMain.offsetWidth / 2
   };
 
   var onMapPinClickEnter = function (evt) {
+    var activePin = document.querySelector('.map__pin--active');
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
+    }
+
     var target = evt.target;
     var mapPin = target.closest('.map__pin');
 
-    if (!target || !mapPin) {
+    if (!target || !mapPin || !window.mainModule.getPageActivation()) {
       return;
     }
 
-    var allowedPins = document.querySelectorAll('[class="map__pin"]');
+    mapPin.classList.add('map__pin--active');
 
     var targetLocation = {
       x: parseInt(mapPin.style.left, 10),
       y: parseInt(mapPin.style.top, 10)
     };
 
-    var isAllowedPin = false;
-
-    for (var i = 0; i < allowedPins.length; i++) {
-      var allowedPin = allowedPins[i];
-
-      if (allowedPin === mapPin) {
-        isAllowedPin = true;
-        break;
-      }
-    }
-
-    if (isAllowedPin && window.mainModule.getPageActivation()) {
+    if (elements.mapPinMain !== mapPin && window.mainModule.getPageActivation()) {
       window.card.fillPopup(window.card.findNotice(targetLocation));
       window.card.onPopupOpen();
     }
   };
 
-  var togglePageState = function (isActive) {
-    if (isActive) {
-      window.appDefaults.elements.map.classList.toggle('map--faded');
-      window.appDefaults.elements.noticeForm.classList.toggle('ad-form--disabled');
-      if (window.mainModule.getNotices()) {
-        window.appDefaults.elements.mapFilterSelects
-          .forEach(function (el) {
-            el.disabled = !el.disabled;
-          });
-        var mapFilterFieldSet = window.appDefaults.elements.mapFilterFieldSet;
-        mapFilterFieldSet.disabled = !mapFilterFieldSet.disabled;
-      }
-    }
+  var disableFormFields = function (isDisabled) {
+    window.appDefaults.elements.mapFilterSelects
+      .forEach(function (el) {
+        el.disabled = isDisabled;
+      });
+    var mapFilterFieldSet = window.appDefaults.elements.mapFilterFieldSet;
+    mapFilterFieldSet.disabled = isDisabled;
+
     window.appDefaults.elements.noticeFieldSets.forEach(function (el) {
-      el.disabled = !el.disabled;
+      el.disabled = isDisabled;
     });
   };
 
+  var deactivatePageState = function () {
+    window.appDefaults.elements.map.classList.add('map--faded');
+    window.appDefaults.elements.noticeForm.classList.add('ad-form--disabled');
+    disableFormFields(true);
+  };
+
   var activatePageState = function () {
-    window.mainModule.setPageActivation(true);
-    togglePageState(window.mainModule.getPageActivation());
+    if (window.mainModule.getNotices()) {
+      window.appDefaults.elements.map.classList.remove('map--faded');
+      window.appDefaults.elements.noticeForm.classList.remove('ad-form--disabled');
+      disableFormFields(false);
+
+      window.mainModule.applyNotices(window.mainModule.getNotices().slice(window.appDefaults.Constants.START_ARRAY_INDEX, window.appDefaults.Constants.MAX_NOTICES_ON_PAGE));
+    }
+
     window.form.fillDefaultAddress(window.mainModule.getPageActivation());
   };
 
@@ -114,6 +118,8 @@ window.pin = (function () {
 
       elements.mapPinMain.style.top = tmpTop + 'px';
       elements.mapPinMain.style.left = tmpLeft + 'px';
+
+      window.form.fillDefaultAddress(window.mainModule.getPageActivation());
     };
 
     var onMouseUp = function (upEvt) {
@@ -139,20 +145,22 @@ window.pin = (function () {
 
   elements.mapPins.addEventListener('keydown', function (evt) {
     window.util.doEnterEvent(evt, onMapPinClickEnter);
-  }, true);
+  });
 
   elements.mapPins.addEventListener('click', function (evt) {
     onMapPinClickEnter(evt);
-  }, true);
+  });
 
   elements.mapPinMain.addEventListener('mousedown', function (evt) {
-    if (evt.button === LEFT_BUTTON && !window.mainModule.getPageActivation()) {
+    if (evt.button === LEFT_BUTTON && window.mainModule && !window.mainModule.getPageActivation()) {
+      window.mainModule.setPageActivation(true);
       activatePageState();
     }
     handleMainPinMove(evt);
   });
   elements.mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Enter' && !window.mainModule.getPageActivation()) {
+    if (evt.key === 'Enter' && window.mainModule && !window.mainModule.getPageActivation()) {
+      window.mainModule.setPageActivation(true);
       activatePageState();
     }
   });
@@ -163,7 +171,9 @@ window.pin = (function () {
 
     noticeElement.style = 'left: ' + (notice.location.x + noticeElement.offsetWidth / 2) + 'px; top: ' + (notice.location.y + noticeElement.offsetHeight) + 'px;';
     image.alt = notice.offer.title;
-    image.src = notice.author.avatar;
+    if (notice.author) {
+      image.src = notice.author.avatar;
+    }
 
     return noticeElement;
   };
@@ -176,10 +186,24 @@ window.pin = (function () {
     return fragment;
   };
 
+  var resetForms = function () {
+    window.card.onPopupClose();
+    window.appDefaults.elements.mapFilters.reset();
+    window.mainModule.applyNotices([]);
+    deactivatePageState();
+    window.mainModule.setPageActivation(false);
+    elements.mapPinMain.style = 'left: ' + mapPinMainDefaultStyle.left + '; top: ' + mapPinMainDefaultStyle.top;
+    window.form.fillDefaultAddress(window.mainModule.getPageActivation());
+    window.appDefaults.elements.noticeImagePreview.innerHTML = '';
+    window.appDefaults.elements.userAvatarPreview.src = window.appDefaults.elements.userAvatarPreviewDefaultSrc;
+  };
+
   return {
     elements: elements,
     getNoticesFragment: getNoticesFragment,
-    togglePageState: togglePageState
+    resetForms: resetForms,
+    activatePageState: activatePageState,
+    deactivatePageState: deactivatePageState
   };
 
 })();

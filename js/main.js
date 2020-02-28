@@ -2,7 +2,7 @@
 
 window.mainModule = (function () {
   var isPageActivated = false;
-  var _notices;
+  var _notices = null;
 
   var setNotices = function (notices) {
     _notices = notices;
@@ -29,13 +29,17 @@ window.mainModule = (function () {
   };
 
   var successHandler = function (data) {
+    data.filter(function (el) {
+      return el.offer;
+    });
     setNotices(data);
-    var filteredByDefaultNotices = getNotices().slice(window.appDefaults.constants.MAX_NOTICES_ON_PAGE);
-    applyNotices(filteredByDefaultNotices);
-    window.pin.togglePageState(isPageActivated);
-    window.form.fillDefaultAddress(isPageActivated);
+    if (getPageActivation()) {
+      window.pin.activatePageState();
+    }
   };
 
+  window.form.fillDefaultAddress(getPageActivation());
+  window.pin.deactivatePageState();
   window.data.loadNotices(successHandler, window.util.errorHandler);
 
   return {
