@@ -14,7 +14,7 @@ window.pin = (function () {
 
   var pinBoundaries = {
     minTop: window.data.LocationYConstraints.MIN - elements.mapPinMain.offsetHeight,
-    maxTop: window.data.LocationYConstraints.max - elements.mapPinMain.offsetHeight,
+    maxTop: window.data.LocationYConstraints.MAX - elements.mapPinMain.offsetHeight,
     minLeft: -elements.mapPinMain.offsetWidth / 2,
     maxLeft: elements.mapPins.offsetWidth - elements.mapPinMain.offsetWidth / 2
   };
