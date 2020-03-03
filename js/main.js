@@ -28,22 +28,13 @@ window.mainModule = (function () {
     window.pin.elements.mapPins.appendChild(window.pin.getNoticesFragment(filteredByDefaultNotices));
   };
 
-  var successHandler = function (data) {
-    data.filter(function (el) {
-      return el.offer;
-    });
-    setNotices(data);
-    if (getPageActivation()) {
-      window.pin.activatePageState();
-    }
-  };
-
   window.form.fillDefaultAddress(getPageActivation());
   window.pin.deactivatePageState();
-  window.data.loadNotices(successHandler, window.util.errorHandler);
+
 
   return {
     getNotices: getNotices,
+    setNotices: setNotices,
     setPageActivation: setPageActivation,
     getPageActivation: getPageActivation,
     applyNotices: applyNotices

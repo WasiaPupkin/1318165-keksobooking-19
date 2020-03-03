@@ -16,6 +16,12 @@ window.form = (function () {
   var successPopup;
   var clearFormBtn = document.querySelector('.ad-form__reset');
   var mainTag = document.querySelector('main');
+  var defaultPricePlaceHolder = price.placeholder;
+  var defaultPriceMin = price.min;
+  var FLAT_PRICE_MIN_PLACEHOLDER = 1000;
+  var BUNGALO_PRICE_MIN_PLACEHOLDER = 0;
+  var HOUSE_PRICE_MIN_PLACEHOLDER = 5000;
+  var PALACE_PRICE_MIN_PLACEHOLDER = 10000;
 
   var fillDefaultAddress = function (isActive) {
     var address = document.querySelector('#address');
@@ -45,10 +51,10 @@ window.form = (function () {
 
   type.addEventListener('input', function () {
     switch (type.value) {
-      case 'flat': price.min = 1000; price.placeholder = 1000; break;
-      case 'bungalo': price.min = 0; price.placeholder = 0; break;
-      case 'house': price.min = 5000; price.placeholder = 5000; break;
-      case 'palace': price.min = 10000; price.placeholder = 10000; break;
+      case 'flat': price.min = FLAT_PRICE_MIN_PLACEHOLDER; price.placeholder = FLAT_PRICE_MIN_PLACEHOLDER; break;
+      case 'bungalo': price.min = BUNGALO_PRICE_MIN_PLACEHOLDER; price.placeholder = BUNGALO_PRICE_MIN_PLACEHOLDER; break;
+      case 'house': price.min = HOUSE_PRICE_MIN_PLACEHOLDER; price.placeholder = HOUSE_PRICE_MIN_PLACEHOLDER; break;
+      case 'palace': price.min = PALACE_PRICE_MIN_PLACEHOLDER; price.placeholder = PALACE_PRICE_MIN_PLACEHOLDER; break;
       default : break;
     }
   });
@@ -173,6 +179,9 @@ window.form = (function () {
   timeout.addEventListener('input', onTimeOutInput);
 
   return {
-    fillDefaultAddress: fillDefaultAddress
+    fillDefaultAddress: fillDefaultAddress,
+    price: price,
+    defaultPricePlaceHolder: defaultPricePlaceHolder,
+    defaultPriceMin: defaultPriceMin
   };
 })();
